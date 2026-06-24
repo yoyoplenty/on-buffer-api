@@ -1,19 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Patch,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiUnprocessableEntityResponse,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Patch, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 
 import { User } from '@on/decorators/user.decorator';
 import { ErrorResponse, JsonResponse } from '@on/handlers/responses';
@@ -46,11 +32,7 @@ export class UserController {
   @ApiOkResponse({ description: 'Get user profile', type: [User] })
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async findProfile(
-    @User() user: UserDocument,
-    @Res() res: Response,
-    @Req() req: Request,
-  ): Promise<ResponseDTO> {
+  async findProfile(@User() user: UserDocument, @Res() res: Response, @Req() req: Request): Promise<ResponseDTO> {
     try {
       const response = await this.userService.profile(user);
 

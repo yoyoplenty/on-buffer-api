@@ -1,9 +1,11 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 
 import { RoleRepository } from '@on/app/role/repository/role.repository';
+import { UserStatus } from '@on/enum';
+import { hashResource } from '@on/helpers/password';
 
 import { UserRepository } from '../repository/user.repository';
+import { OnboardingStep } from '../types/user.interface';
 
 import { users } from './data';
 
@@ -36,19 +38,15 @@ export class UserSeeder implements OnModuleInit {
         continue;
       }
 
-      const hashedPassword = await bcrypt.hash(userSeed.password, 10);
+      const hashedPin = await hashResource(userSeed.pin);
 
       await this.user.create({
-        country_code: userSeed.country_code,
         phone: userSeed.phone,
-        email: userSeed.email,
-        password: hashedPassword,
-        role_id: role._id,
-        phone_verified: true,
-        email_verified: true,
-        password_changed: true,
-        status: 'active',
-        last_login: null,
+        pin: hashedPin,
+        roleId: role._id,
+        phoneVerified: true,
+        status: UserStatus.ACTIVE,
+        onboardingStep: OnboardingStep.COMPLETED,
       });
 
       this.logger.log(`Created user for role: ${role.name}`);

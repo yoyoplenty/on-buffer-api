@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 
 import { Counter, CounterSchema } from './model/counter.model';
 import { Lga, LgaSchema } from './model/local-govt.model';
@@ -17,6 +18,7 @@ import { SharedService } from './shared.service';
       { name: Lga.name, schema: LgaSchema },
       { name: Counter.name, schema: CounterSchema },
     ]),
+    NestjsFormDataModule,
   ],
   controllers: [SharedController],
   providers: [StateRepository, LgaRepository, CounterRepository, SharedService],

@@ -9,14 +9,7 @@ import { IToken } from '../types/token.interface';
 
 export type TokenDocument = HydratedDocument<Token>;
 
-@Schema({
-  collection: 'tokens',
-  versionKey: false,
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-  },
-})
+@Schema({ collection: 'tokens', versionKey: false })
 export class Token extends Document implements IToken {
   @ApiProperty()
   @Prop({ type: Types.ObjectId, ref: 'User' })

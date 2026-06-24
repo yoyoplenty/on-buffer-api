@@ -6,9 +6,7 @@ import { BaseRepository } from '@on/repository/base.repository';
 import { Token, TokenDocument } from '../model/token.model';
 
 export class TokenRepository extends BaseRepository<TokenDocument> {
-  constructor(
-    @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
-  ) {
+  constructor(@InjectModel(Token.name) private tokenModel: Model<TokenDocument>) {
     super(tokenModel);
   }
 }

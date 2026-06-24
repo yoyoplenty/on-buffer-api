@@ -1,27 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
-import { ILogin, IResetPassword, ISharedAuth } from '../types/auth.interface';
+import { ILogin, IResetPin, ISharedAuth } from '../types/auth.interface';
 
 export class SharedAuthDto implements ISharedAuth {
-  @ApiProperty({ description: 'User email or phone number' })
+  @ApiProperty({ description: 'User Phone number' })
   @IsString()
   @IsNotEmpty()
-  value: string;
+  phone: string;
 }
 
 export class LoginDto extends SharedAuthDto implements ILogin {
-  @ApiProperty({ description: 'User Password' })
-  @IsString()
+  @ApiProperty({ description: 'User Pin' })
+  @Length(4, 4)
+  @Matches(/^\d{4}$/)
   @IsNotEmpty()
-  password: string;
+  pin: string;
 }
 
-export class ResetPasswordDto extends SharedAuthDto implements IResetPassword {
-  @ApiProperty({ description: 'New User Password' })
+export class ResetPinDto extends SharedAuthDto implements IResetPin {
+  @ApiProperty({ description: 'New User Pin' })
   @IsString()
   @IsNotEmpty()
-  newPassword: string;
+  pin: string;
 
   @ApiProperty({ description: 'User OTP code' })
   @IsString()

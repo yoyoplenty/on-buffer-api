@@ -1,16 +1,16 @@
 import { User } from '@on/app/user/model/user.model';
 
 export interface ISharedAuth {
-  value: string;
+  phone: string;
 }
 
 export interface ILogin extends ISharedAuth {
-  password: string;
+  pin: string;
 }
 
-export interface IResetPassword extends ISharedAuth {
+export interface IResetPin extends ISharedAuth {
+  pin: string;
   otp: string;
-  newPassword: string;
 }
 
 export interface IUserToken {

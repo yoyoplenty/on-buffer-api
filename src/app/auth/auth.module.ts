@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { config } from '@on/config';
+import { DatabaseService } from '@on/services/db';
 
 import { RoleModule } from '../role/role.module';
 import { SharedModule } from '../shared/shared.module';
@@ -23,7 +24,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, DatabaseService],
   exports: [AuthService],
 })
 export class AuthModule {}

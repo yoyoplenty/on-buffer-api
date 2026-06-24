@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { FileDto } from '@on/utils/dto/file.dto';
 import { ServiceResponse } from '@on/utils/types';
 
 import { LgaQueryDto, StateQueryDto } from './dto/state-local.dto';
@@ -31,15 +32,19 @@ export class SharedService {
     return { data, message: `Lga successfully fetched` };
   }
 
+  async uploadFile(payload: FileDto): Promise<ServiceResponse<string | null>> {
+    const { file } = payload;
+
+    console.log(file);
+
+    return { data: null, message: `Lga successfully fetched` };
+  }
+
   /**
    * UTILITIES
    */
 
-  async generateSequentialId(
-    counterName: string,
-    prefix: string,
-    padding: number = 5,
-  ): Promise<string> {
+  async generateSequentialId(counterName: string, prefix: string, padding: number = 5): Promise<string> {
     const result = await this.counter.findOneAndUpdate(
       { _id: counterName },
       { $inc: { seq: 1 } },

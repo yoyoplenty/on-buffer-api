@@ -3,16 +3,23 @@ import { ObjectId } from 'mongodb';
 import { UserStatus } from '@on/enum';
 import { IBaseType } from '@on/utils/types';
 
+export enum OnboardingStep {
+  NOT_STARTED = 'not_started',
+  PERSONAL = 'personal',
+  EMPLOYMENT = 'employment',
+  VERIFICATION = 'verification',
+  REPAYMENT = 'repayment',
+  SECURITY = 'security',
+  REVIEW = 'review',
+  COMPLETED = 'completed',
+}
+
 export interface IUser extends IBaseType {
-  country_code: string;
   phone: string;
-  email?: string;
-  role_id: ObjectId;
-  password: string;
+  roleId: ObjectId;
   pin: string;
-  phone_verified: boolean;
-  email_verified: boolean;
-  password_changed: boolean;
+  phoneVerified: boolean;
   status: UserStatus;
-  last_login: Date;
+  onboardingStep: OnboardingStep;
+  lastLogin: Date;
 }

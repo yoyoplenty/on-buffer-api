@@ -3,6 +3,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 
+import { AuthModule } from './app/auth/auth.module';
 import { RoleModule } from './app/role/role.module';
 import { SharedModule } from './app/shared/shared.module';
 import { UserModule } from './app/user/user.module';
@@ -15,6 +16,7 @@ import { HttpExceptionFilter } from './handlers/exceptions/http-exception.filter
     MongooseModule.forRoot(config.db.url as string),
     RoleModule,
     UserModule,
+    AuthModule,
     SharedModule,
     ScheduleModule.forRoot(),
   ],

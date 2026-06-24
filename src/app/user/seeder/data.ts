@@ -1,51 +1,30 @@
+import { UserStatus } from '@on/enum';
+
+import { OnboardingStep } from '../types/user.interface';
+
 export const users = [
   {
     role: 'super-admin',
-    country_code: '234',
     phone: '9000000001',
-    email: 'superadmin@oncre.com',
-    password: 'Super@123',
+    pin: '1234',
+    phoneVerified: true,
+    status: UserStatus.ACTIVE,
+    onboardingStep: OnboardingStep.COMPLETED,
   },
   {
     role: 'admin',
-    country_code: '234',
     phone: '9000000002',
-    email: 'admin@oncre.com',
-    password: 'Admin@123',
+    pin: '2345',
+    phoneVerified: true,
+    status: UserStatus.ACTIVE,
+    onboardingStep: OnboardingStep.COMPLETED,
   },
   {
-    role: 'recovery',
-    country_code: '234',
-    phone: '9000000003',
-    email: 'recovery@oncre.com',
-    password: 'Recovery@123',
-  },
-  {
-    role: 'sales',
-    country_code: '234',
-    phone: '9000000004',
-    email: 'sales@oncre.com',
-    password: 'Sales@123',
-  },
-  {
-    role: 'field-agent',
-    country_code: '234',
-    phone: '9000000007',
-    email: 'field-agent@oncre.com',
-    password: 'FieldAgent@123',
-  },
-  {
-    role: 'merchant',
-    country_code: '234',
-    phone: '9000000005',
-    email: 'merchant@oncre.com',
-    password: 'Merchant@123',
-  },
-  {
-    role: 'customer',
-    country_code: '234',
-    phone: '9000000006',
-    email: 'customer@oncre.com',
-    password: 'Customer@123',
+    role: 'user',
+    phone: '9000000002',
+    pin: '3456',
+    phoneVerified: true,
+    status: UserStatus.ACTIVE,
+    onboardingStep: OnboardingStep.COMPLETED,
   },
 ];

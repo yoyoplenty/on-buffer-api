@@ -1,14 +1,9 @@
-import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiUnprocessableEntityResponse,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 
 import { ErrorResponse, JsonResponse } from '@on/handlers/responses';
 import { requestFilter } from '@on/helpers/filter';
+import { FileDto } from '@on/utils/dto/file.dto';
 import { ApiResponseDTO } from '@on/utils/dto/response.dto';
 import { ResponseDTO } from '@on/utils/types';
 
@@ -39,11 +34,7 @@ export class SharedController {
   })
   @UseGuards(JwtAuthGuard)
   @Get('state')
-  async findState(
-    @Query() query: StateQueryDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ): Promise<ResponseDTO> {
+  async findState(@Query() query: StateQueryDto, @Res() res: Response, @Req() req: Request): Promise<ResponseDTO> {
     try {
       const filter = requestFilter(query);
 
@@ -63,15 +54,27 @@ export class SharedController {
   @ApiOkResponse({ description: 'Get lgas successful ', type: ApiResponseDTO })
   @UseGuards(JwtAuthGuard)
   @Get('lga')
-  async findLga(
-    @Query() query: LgaQueryDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ): Promise<ResponseDTO> {
+  async findLga(@Query() query: LgaQueryDto, @Res() res: Response, @Req() req: Request): Promise<ResponseDTO> {
     try {
       const filter = requestFilter(query);
 
       const response = await this.sharedService.findLga(filter);
+
+      return JsonResponse(res, response);
+    } catch (error) {
+      return ErrorResponse(res, error, req);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Upload File',
+    description: 'Allow users upload file',
+  })
+  @ApiOkResponse({ description: 'File Uploaded successfully', type: ApiResponseDTO })
+  @Post('upload-file')
+  async upload(@Body() payload: FileDto, @Res() res: Response, @Req() req: Request): Promise<ResponseDTO> {
+    try {
+      const response = await this.sharedService.uploadFile(payload);
 
       return JsonResponse(res, response);
     } catch (error) {

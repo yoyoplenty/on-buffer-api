@@ -23,7 +23,7 @@ export class PermissionGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user: UserDocument = request.user;
 
-    const role = await this.role.findById(user.role_id, { populate: [{ path: 'permissions' }] });
+    const role = await this.role.findById(user?.roleId, { populate: [{ path: 'permissions' }] });
     const userPermissions: string[] = role?.permissions?.map((permission: Permission) => permission.name) ?? [];
 
     return requiredPermissions.every((permission) => userPermissions.includes(permission));
