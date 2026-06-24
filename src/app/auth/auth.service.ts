@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, Logger, NotFoundExc
 import { JwtService } from '@nestjs/jwt';
 import { ClientSession } from 'mongoose';
 
-import { TokenType } from '@on/enum';
+import { TokenType, UserStatus } from '@on/enum';
 import { compareResource, hashResource } from '@on/helpers/password';
 import { DatabaseService } from '@on/services/db';
 import { ServiceResponse } from '@on/utils/types';
@@ -57,6 +57,7 @@ export class AuthService {
 
     if (!user.pin) throw new BadRequestException('User pin not set');
     if (!user.phoneVerified) throw new BadRequestException('Phone number not verified');
+    if (user.status === UserStatus.INACTIVE) throw new BadRequestException('Account in inactive');
 
     const isValidPin: boolean = await compareResource(pin, user.pin);
     if (!isValidPin) throw new BadRequestException('Incorrect pin provided');
