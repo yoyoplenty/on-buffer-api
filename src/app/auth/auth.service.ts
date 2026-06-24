@@ -8,6 +8,8 @@ import { DatabaseService } from '@on/services/db';
 import { ServiceResponse } from '@on/utils/types';
 
 import { RoleRepository } from '../role/repository/role.repository';
+import { SharedService } from '../shared/shared.service';
+import { Application } from '../user/model/application.model';
 import { Customer } from '../user/model/customer.model';
 import { User } from '../user/model/user.model';
 import { ApplicationRepository } from '../user/repository/application.repository';
@@ -37,6 +39,7 @@ export class AuthService {
     private readonly role: RoleRepository,
     private readonly card: CardRepository,
     private readonly user: UserRepository,
+    private readonly shared: SharedService,
     private readonly token: TokenRepository,
     private readonly userService: UserService,
     private readonly customer: CustomerRepository,
@@ -70,6 +73,7 @@ export class AuthService {
 
   public async onboard(payload: OnboardingDto): Promise<ServiceResponse<User>> {
     const role = await this.role.findOne({ name: 'user' });
+    if (!role) throw new BadRequestException('Default user role not found');
 
     return this.db.transaction(async (session: ClientSession) => {
       const { personalDto, pin, employmentDto, verificationDto, repaymentDto, cardDto } = payload;
@@ -98,20 +102,25 @@ export class AuthService {
 
       let customer: Customer | null = await this.customer.findOne({ userId: user._id }, { session });
 
-      if (customer) customer = await this.customer.updateOne({ userId: user._id }, { otherPersonal }, { session });
-      else customer = await this.customer.create({ userId: user._id, otherPersonal }, { session });
+      if (customer) customer = await this.customer.updateOne({ userId: user._id }, { ...otherPersonal }, { session });
+      else customer = await this.customer.create({ userId: user._id, ...otherPersonal }, { session });
 
-      await this.employment.create({ userId: user._id, customerId: customer?._id, ...employmentDto }, { session });
+      await this.employment.findOneAndUpdate(
+        { userId: user._id },
+        { userId: user._id, customerId: customer?._id, ...employmentDto },
+        { upsert: true, returnDocument: 'after', session },
+      );
 
-      await this.verification.create({ userId: user._id, customerId: customer?._id, ...verificationDto }, { session });
+      await this.verification.findOneAndUpdate(
+        { userId: user._id },
+        { userId: user._id, customerId: customer?._id, ...verificationDto },
+        { upsert: true, returnDocument: 'after', session },
+      );
 
-      const repayment = await this.repayment.create(
-        {
-          userId: user._id,
-          customerId: customer?._id,
-          ...repaymentDto,
-        },
-        { session },
+      const repayment = await this.repayment.findOneAndUpdate(
+        { userId: user._id },
+        { userId: user._id, customerId: customer?._id, ...repaymentDto },
+        { upsert: true, returnDocument: 'after', session },
       );
 
       if (repaymentMethod === RepaymentMethod.CARD && cardDto) {
@@ -130,14 +139,15 @@ export class AuthService {
         );
       }
 
-      const application = await this.application.create(
+      const applicationId = await this.shared.generateSequentialId('application_id', 'APP', 5);
+
+      const application: Application | null = await this.application.findOneAndUpdate(
+        { userId: user._id },
         {
-          userId: user._id,
-          applicationId: '',
-          status: ApplicationStatus.IN_PROGRESS,
-          currentStep: OnboardingStep.PERSONAL,
+          $set: { status: ApplicationStatus.IN_PROGRESS, currentStep: OnboardingStep.PERSONAL },
+          $setOnInsert: { applicationId, userId: user._id },
         },
-        { session },
+        { upsert: true, returnDocument: 'after', session },
       );
 
       user = await this.user.updateById(
@@ -146,15 +156,15 @@ export class AuthService {
         { session },
       );
 
-      await this.application.updateById(
-        application._id,
+      await this.application.updateOne(
+        { _id: application?._id },
         { status: ApplicationStatus.SUBMITTED, submittedAt: new Date() },
         { session },
       );
 
       this.logger.log(`Onboarding process has completed for, ${phone}`);
 
-      return { data: user, message: 'User login successfully.' };
+      return { data: user, message: 'User oboarded successfully.' };
     });
   }
 
